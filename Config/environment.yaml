@@ -1,0 +1,4 @@
+test:
+  base_url: "https://ui.example.com"
+prod:
+  base_url: "https://api.example.com"

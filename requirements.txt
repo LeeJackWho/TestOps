@@ -1,0 +1,16 @@
+# 测试框架
+pytest>=7.4.0
+pytest-html>=4.1.1
+allure-pytest>=2.13.2
+
+# UI测试
+playwright>=1.48.0
+
+# API测试
+requests>=2.31.0
+
+# 数据处理
+pyyaml>=6.0.1
+
+# 工具包
+python-dotenv>=1.0.0

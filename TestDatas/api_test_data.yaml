@@ -1,0 +1,8 @@
+test_data:
+  endpoint1:
+    input:
+      param1: value1
+      param2: value2
+    expected:
+      status_code: 200
+      response_key: expected_value
