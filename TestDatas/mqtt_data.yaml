@@ -1,0 +1,18 @@
+mqtt:
+  # 发布/订阅回路用例（数据驱动）
+  roundtrip:
+    - topic: testops/demo/device/pn01
+      payload: '{"device":"pn01","power_kwh":3500,"soc":85}'
+      qos: 1
+    - topic: testops/demo/device/pn02
+      payload: "plain-text-payload"
+      qos: 0
+  # 遗留消息
+  retained:
+    topic: testops/demo/retained
+    payload: '{"snapshot":true}'
+  # 通配符订阅
+  wildcard:
+    sub_topic: testops/+/status
+    pub_topic: testops/pn01/status
+    payload: "online"

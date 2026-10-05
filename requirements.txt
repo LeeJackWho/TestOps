@@ -9,6 +9,9 @@ playwright>=1.48.0
 # API测试
 requests>=2.31.0
 
+# MQTT测试
+paho-mqtt>=1.6.1,<2.0
+
 # 数据处理
 pyyaml>=6.0.1
 
