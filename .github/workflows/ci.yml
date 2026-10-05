@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # 框架自测：配置模块 + 数据加载器
+  framework-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      - name: 运行框架自测
+        run: pytest tests -v -o "addopts=--tb=short"
+
+  # MQTT 集成测试：宿主机起 Mosquitto，验证发布/订阅/遗留消息/通配符
+  mqtt-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      - name: 启动 Mosquitto broker
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq mosquitto
+          mosquitto -c mosquitto/config/mosquitto.conf -d
+          sleep 2
+      - name: 运行 MQTT 测试
+        run: pytest test_mqtt -v -o "addopts=--tb=short"
+        env:
+          MQTT_BROKER: localhost
+          MQTT_PORT: "1883"

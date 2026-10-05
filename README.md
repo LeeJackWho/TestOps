@@ -1,5 +1,24 @@
+# TestOps
+
+![CI](https://github.com/LeeJackWho/TestOps/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.7%2B-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+AI-assisted automation testing framework based on Playwright + Pytest + Allure + Midscene, supporting UI / API / MQTT testing. Page Object pattern, data-driven, Docker-ready.
+
 ## 项目简介
-这是一个基于 Playwright + Pytest + Allure + Midscene + Request 的自动化测试框架，支持 UI 自动化测试和 API 自动化测试。框架采用 Page Object 模式设计，具有良好的可维护性和扩展性。
+这是一个基于 Playwright + Pytest + Allure + Midscene + Request 的自动化测试框架，支持 UI 自动化测试、API 自动化测试和 **MQTT 消息中间件测试**。框架采用 Page Object 模式设计，具有良好的可维护性和扩展性。
+
+## 子系统总览
+
+| 子系统 | 目录 | 说明 |
+|---|---|---|
+| UI 自动化测试 | `test_ui/` | Playwright + Midscene AI 辅助，Page Object 模式 |
+| API 自动化测试 | `test_api/` | requests 封装 + YAML 数据驱动 |
+| MQTT 测试 | `test_mqtt/` | paho-mqtt 封装，覆盖发布/订阅回路、QoS、遗留消息、通配符订阅 |
+| 框架自测 | `tests/` | 配置模块与数据加载器的单元自测，CI 门禁 |
+| Docker 化 | `Dockerfile` / `docker-compose.yml` | 一键拉起 Mosquitto broker 并执行自测 + MQTT 测试 |
+| CI | `.github/workflows/ci.yml` | GitHub Actions：框架自测 + MQTT 集成测试双 job |
 
 ## 环境要求
 - Python 3.7+
@@ -14,8 +33,7 @@ TestOps/
 ├── Common/                 # 公共方法层
 │   ├── base_page.py       # 页面基类
 │   └── ...               # 其他公共方法
-│
-├── Config/                # 配置层
+│├── Config/                # 配置层
 │   ├── config.ini        # 配置文件
 │   └── ...              # 其他配置
 │
@@ -38,6 +56,17 @@ TestOps/
 ├── test_api/            # API测试用例
 │   ├── __init__.py
 │   └── ...             # API测试脚本
+│
+├── test_mqtt/           # MQTT测试用例
+│   ├── mqtt/           # paho-mqtt 客户端封装
+│   ├── conftest.py     # broker 夹具（MQTT_BROKER/MQTT_PORT 环境变量）
+│   └── ...             # 发布/订阅/QoS/遗留消息/通配符用例
+│
+├── tests/               # 框架自测（CI 门禁）
+├── mosquitto/           # Mosquitto broker 配置
+├── .github/workflows/   # GitHub Actions CI
+├── Dockerfile           # 测试执行镜像
+├── docker-compose.yml   # 一键运行（broker + tests）
 │
 ├── test_ui/             # UI测试用例
 │   ├── __init__.py
@@ -170,6 +199,28 @@ def test_user_api():
     # 测试步骤
     pass
 ```
+
+## MQTT 测试
+
+### 本地运行（需先启动 broker）
+
+```bash
+# 方式一：Docker 一键运行（自动拉起 Mosquitto + 执行测试）
+docker compose up --build tests
+
+# 方式二：本机已安装 mosquitto
+mosquitto -c mosquitto/config/mosquitto.conf -d
+pytest test_mqtt -v -o "addopts="
+```
+
+### 环境变量
+
+| 变量 | 默认值 | 说明 |
+|---|---|---|
+| `MQTT_BROKER` | `localhost` | broker 地址 |
+| `MQTT_PORT` | `1883` | broker 端口 |
+
+测试数据（topic/payload/QoS）见 `TestDatas/mqtt_data.yaml`，新增场景只需加 YAML 用例。
 
 ## 常见问题
 1. 如何处理测试环境配置？
