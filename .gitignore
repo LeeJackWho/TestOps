@@ -72,3 +72,5 @@ Reports/
 allure-results/
 allure-report/
 report.html
+# venv
+.venv/
