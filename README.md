@@ -222,12 +222,45 @@ pytest test_mqtt -v -o "addopts="
 
 测试数据（topic/payload/QoS）见 `TestDatas/mqtt_data.yaml`，新增场景只需加 YAML 用例。
 
+## UI 测试
+
+### 本地运行
+
+```bash
+# 首次运行需安装浏览器内核
+playwright install chromium
+
+# 有头模式（本地调试，可看到浏览器操作）
+HEADLESS=0 pytest test_ui/test_case -v -o "addopts="
+
+# 无头模式（默认，CI 与脚本场景）
+HEADLESS=1 pytest test_ui/test_case -v -o "addopts="
+```
+
+### 环境变量
+
+| 变量 | 默认值 | 说明 |
+|---|---|---|
+| `HEADLESS` | `1` | `1` 无头 / `0` 有头，本地调试设为 `0` |
+| `BASE_URL` | `https://www.baidu.com` | 浏览器上下文根地址 |
+| `SLOW_MO` | `0` | 每步操作延迟毫秒数，调试可设 `200` |
+
+### 失败取证
+
+`conftest.py` 注册了 `attach_on_failure` 全局 fixture：用例失败时自动全页截图至
+`Reports/screenshots/<用例名>.png`，并打印失败时的页面 URL。CI 已将该目录作为
+artifact 上传（保留 7 天），便于直接定位 UI 失败原因。
+
 ## 常见问题
 1. 如何处理测试环境配置？
    - 在 `.env` 文件中配置相应的环境变量
 
 2. 如何添加新的测试用例？
    - 在 test_ui 或 test_api 目录下创建新的测试文件
+
+3. CI 上 UI 用例报浏览器启动失败？
+   - conftest 默认无头运行，且 launch 已带 `--disable-dev-shm-usage`；
+     若本地调试需有头，显式设置 `HEADLESS=0`
    - 遵循项目的命名规范和测试规范
 
 ## 贡献指南

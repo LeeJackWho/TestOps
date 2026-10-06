@@ -74,3 +74,10 @@ allure-report/
 report.html
 # venv
 .venv/
+
+# Midscene 运行产物
+midscene_run/cache/
+midscene_run/report/
+
+# UI 失败截图
+Reports/screenshots/

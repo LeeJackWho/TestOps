@@ -42,3 +42,30 @@ jobs:
         env:
           MQTT_BROKER: localhost
           MQTT_PORT: "1883"
+
+  # UI 冒烟：Playwright 无头执行，失败截图作为 artifact 归档
+  ui-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      - name: 安装 Playwright 浏览器
+        run: playwright install --with-deps chromium
+      - name: UI 冒烟（无头）
+        run: pytest test_ui/test_case -v -o "addopts=--tb=short"
+        env:
+          HEADLESS: "1"
+          BASE_URL: https://www.baidu.com
+      - name: 上传失败截图
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-failure-screenshots
+          path: Reports/screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
