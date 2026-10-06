@@ -1,4 +1,4 @@
 - keyword: "Playwright"
-  expected: "playwright"
+  expected: "Playwright"
 - keyword: "Allure"
-  expected: "allure"
+  expected: "Allure"

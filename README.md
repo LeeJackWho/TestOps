@@ -245,6 +245,12 @@ HEADLESS=1 pytest test_ui/test_case -v -o "addopts="
 | `BASE_URL` | `https://www.baidu.com` | 浏览器上下文根地址 |
 | `SLOW_MO` | `0` | 每步操作延迟毫秒数，调试可设 `200` |
 
+### 演示用例说明
+
+UI 冒烟用例基于仓库内静态页 `assets/demo_search.html`（数据驱动：`TestDatas/search_data.yaml`），
+不依赖真实第三方站点——外部页面改版频繁且可能触发风控，会导致 CI 长期不稳定。
+如需针对真实站点编写用例，建议仅本地调试运行，不要直接挂进 CI 门禁。
+
 ### 失败取证
 
 `conftest.py` 注册了 `attach_on_failure` 全局 fixture：用例失败时自动全页截图至

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Demo 搜索</title>
+<style>
+  body { font-family: sans-serif; max-width: 640px; margin: 60px auto; }
+  #kw { width: 400px; padding: 8px; }
+  #su { padding: 8px 16px; }
+  .result { padding: 8px 0; border-bottom: 1px solid #ddd; }
+</style>
+</head>
+<body>
+  <h1>Demo 搜索引擎</h1>
+  <input id="kw" name="wd" maxlength="255" autocomplete="off">
+  <button id="su">搜索</button>
+  <div id="results"></div>
+  <script>
+    document.getElementById("su").addEventListener("click", function () {
+      var kw = document.getElementById("kw").value.trim();
+      var box = document.getElementById("results");
+      box.innerHTML = "";
+      if (!kw) { return; }
+      // 本地确定性行为：为关键词生成三条固定结果
+      ["结果1", "结果2", "结果3"].forEach(function (tag) {
+        var div = document.createElement("div");
+        div.className = "result";
+        div.textContent = tag + ": " + kw;
+        box.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -35,6 +35,9 @@ jobs:
       - name: 启动 Mosquitto broker
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq mosquitto
+          # apt 安装会自动拉起系统 mosquitto（默认拒绝匿名）并占用 1883，
+          # 必须先停掉，否则自定义 broker 启动失败、客户端连到的是系统服务
+          sudo systemctl stop mosquitto 2>/dev/null || true
           mosquitto -c mosquitto/config/mosquitto.conf -d
           sleep 2
       - name: 运行 MQTT 测试
