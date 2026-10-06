@@ -1,5 +1,6 @@
 """Paho-Mqtt 客户端封装：连接管理、发布/订阅、消息队列收取"""
 import queue
+import time
 import uuid
 from typing import Optional
 
@@ -40,10 +41,18 @@ class MQTTBase:
     def is_connected(self) -> bool:
         return self._connected
 
-    def connect(self) -> "MQTTBase":
+    def connect(self, timeout: float = 10.0) -> "MQTTBase":
         rc = self._client.connect(self.host, self.port, self.keepalive)
         assert rc == mqtt.MQTT_ERR_SUCCESS, f"MQTT 连接失败, rc={rc}"
         self._client.loop_start()
+        # CONNACK 由 loop 线程异步处理，必须等待连接真正建立再返回，
+        # 否则调用方立即断言 is_connected 会产生竞态（CI 高负载下必现）
+        deadline = time.monotonic() + timeout
+        while not self._connected:
+            if time.monotonic() >= deadline:
+                raise ConnectionError(
+                    f"MQTT 未在 {timeout}s 内完成连接: {self.host}:{self.port}")
+            time.sleep(0.05)
         return self
 
     def subscribe(self, topic: str, qos: int = 0) -> None:
